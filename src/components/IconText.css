@@ -1,53 +1,105 @@
 .icon-text-card {
-  display: inline-flex;
+  display: flex;
   align-items: center;
-  gap: 0.75rem;
-  width: 100%;
-  max-width: 320px;
-  padding: 1rem 1.2rem;
-  border: 1px solid rgba(0, 0, 0, 0.1);
+  gap: 1rem;
+  padding: 1.5rem;
+  border: 1px solid rgba(37, 99, 235, 0.15);
   border-radius: 16px;
-  background-color: rgba(255, 255, 255, 0.92);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
-  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(15px);
+  box-shadow: 0 4px 16px rgba(37, 99, 235, 0.08);
+  transition: all 0.5s cubic-bezier(0.25, 1, 0.5, 1);
   text-align: left;
   cursor: pointer;
-  color: inherit;
-  font: inherit;
+  color: #1f2937;
+  font-family: 'Inter', sans-serif;
+  position: relative;
+  overflow: hidden;
+  height: 100%;
+}
+
+.icon-text-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(37, 99, 235, 0.02), rgba(16, 185, 129, 0.02));
+  opacity: 0;
+  transition: opacity 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.icon-text-card:hover::before,
+.icon-text-card:focus-visible::before {
+  opacity: 1;
 }
 
 .icon-text-card:hover,
 .icon-text-card:focus-visible {
-  transform: translateY(-2px);
-  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
-  border-color: rgba(0, 0, 0, 0.16);
+  transform: translateY(-6px) scale(1.02);
+  box-shadow: 0 12px 48px rgba(37, 99, 235, 0.15);
+  border-color: rgba(37, 99, 235, 0.25);
+  backdrop-filter: blur(20px);
 }
 
 .icon-text-card:active {
-  transform: translateY(0);
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.12);
+  transform: translateY(-2px) scale(0.98);
+  box-shadow: 0 8px 32px rgba(37, 99, 235, 0.12);
 }
 
 .icon-text-card.selected {
-  border-color: #5f9ea0;
-  box-shadow: 0 0 0 1px rgba(95, 158, 160, 0.4), 0 16px 28px rgba(95, 158, 160, 0.22);
-  background: rgba(164, 245, 255, 0.2);
-  backdrop-filter: blur(8px);
+  border-color: #2563eb;
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2), 0 16px 64px rgba(37, 99, 235, 0.2);
+  background: rgba(219, 234, 254, 0.3);
+  backdrop-filter: blur(20px);
+}
+
+.icon-text-card.selected::before {
+  background: linear-gradient(135deg, rgba(37, 99, 235, 0.1), rgba(16, 185, 129, 0.05));
+  opacity: 1;
+}
+
+.icon-text-icon {
+  font-size: 1.5rem;
+  flex-shrink: 0;
+  transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.icon-text-card:hover .icon-text-icon {
+  transform: scale(1.1);
+}
+
+.icon-text-text {
+  font-weight: 500;
+  font-size: 1rem;
+  letter-spacing: -0.01em;
 }
 
 .icon-text-check {
-  display: inline-flex;
+  margin-left: auto;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #2563eb;
+  color: white;
+  display: flex;
   align-items: center;
   justify-content: center;
-  margin-left: auto;
-  width: 1.45rem;
-  height: 1.45rem;
-  color: #2a8d95;
   font-weight: 700;
-  border: 2px solid #2a8d95;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.8);
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.7);
+  font-size: 0.9rem;
+  transition: all 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.icon-text-card.selected .icon-text-check {
+  animation: checkPulse 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+@keyframes checkPulse {
+  0% { transform: scale(0); }
+  50% { transform: scale(1.2); }
+  100% { transform: scale(1); }
+}
 }
 
 .icon-text-icon {
