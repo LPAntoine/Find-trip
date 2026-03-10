@@ -1,8 +1,42 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import IconText from './IconText'
 import destinations from '../destinations.json'
 import './TravelForm.css'
 import ReactMarkdown from 'react-markdown'
+
+const budgets = [
+  { value: 'economique', icon: '💸', label: 'Économique' },
+  { value: 'confort', icon: '💼', label: 'Confort' },
+  { value: 'luxe', icon: '💎', label: 'Luxe' }
+]
+
+const durations = [
+  { value: 'weekend', icon: '📅', label: 'Week-end' },
+  { value: 'semaine', icon: '🗓️', label: 'Semaine' },
+  { value: 'mois', icon: '📆', label: 'Mois' }
+]
+
+const tripTypes = [
+  { value: 'plage', icon: '🏖️', label: 'Plage et détente' },
+  { value: 'culture', icon: '🏛️', label: 'Culture & histoire' },
+  { value: 'aventure', icon: '🧗', label: 'Aventure & nature' },
+  { value: 'ecotourisme', icon: '🌿', label: 'Écotourisme' },
+  { value: 'romantique', icon: '💑', label: 'Romantique' }
+]
+
+const activityOptions = [
+  { value: 'randonees', icon: '🥾', label: 'Randonnées' },
+  { value: 'plongees', icon: '🤿', label: 'Plongées' },
+  { value: 'visites', icon: '🗺️', label: 'Visites culturelles' },
+  { value: 'bienetre', icon: '🧘', label: 'Bien-être' },
+  { value: 'shopping', icon: '🛍️', label: 'Shopping' }
+]
+
+const climates = [
+  { value: 'tempere', icon: '🌤️', label: 'Tempéré' },
+  { value: 'froid', icon: '❄️', label: 'Froid' },
+  { value: 'indifferent', icon: '🌍', label: 'Indifférent' }
+]
 
 function TravelForm() {
   const [budget, setBudget] = useState(null)
@@ -24,49 +58,15 @@ function TravelForm() {
     })
   }, [budget, duration, tripType, activities, climate])
 
-  const budgets = [
-    { value: 'economique', icon: '💸', label: 'Économique' },
-    { value: 'confort', icon: '💼', label: 'Confort' },
-    { value: 'luxe', icon: '💎', label: 'Luxe' }
-  ]
-
-  const durations = [
-    { value: 'weekend', icon: '📅', label: 'Week-end' },
-    { value: 'semaine', icon: '🗓️', label: 'Semaine' },
-    { value: 'mois', icon: '📆', label: 'Mois' }
-  ]
-
-  const tripTypes = [
-    { value: 'plage', icon: '🏖️', label: 'Plage et détente' },
-    { value: 'culture', icon: '🏛️', label: 'Culture & histoire' },
-    { value: 'aventure', icon: '🧗', label: 'Aventure & nature' },
-    { value: 'ecotourisme', icon: '🌿', label: 'Écotourisme' },
-    { value: 'romantique', icon: '💑', label: 'Romantique' }
-  ]
-
-  const activityOptions = [
-    { value: 'randonees', icon: '🥾', label: 'Randonnées' },
-    { value: 'plongees', icon: '🤿', label: 'Plongées' },
-    { value: 'visites', icon: '🗺️', label: 'Visites culturelles' },
-    { value: 'bienetre', icon: '🧘', label: 'Bien-être' },
-    { value: 'shopping', icon: '🛍️', label: 'Shopping' }
-  ]
-
-  const climates = [
-    { value: 'tempere', icon: '🌤️', label: 'Tempéré' },
-    { value: 'froid', icon: '❄️', label: 'Froid' },
-    { value: 'indifferent', icon: '🌍', label: 'Indifférent' }
-  ]
-
-  function toggleActivity(option) {
+  const toggleActivity = useCallback((option) => {
     setActivities((prev) =>
       prev.includes(option)
         ? prev.filter((a) => a !== option)
         : [...prev, option]
     )
-  }
+  }, [])
 
-  async function generateActivities(destination) {
+  const generateActivities = useCallback(async (destination) => {
     const prompt = `Propose 5 activités intéressantes à faire à ${destination.nom}, ${destination.pays}. Considère le type de voyage ${destination.type}, le climat ${destination.climat}, et les activités suggérées ${destination.activites.join(', ')}. Réponds en français avec une liste numérotée.`
 
     try {
@@ -97,9 +97,9 @@ function TravelForm() {
       console.error('Erreur lors de l\'appel à l\'API Groq:', error)
       setGeneratedActivities(['Erreur lors de la génération des activités. Vérifiez la clé API ou les modèles disponibles sur https://console.groq.com/docs/models'])
     }
-  }
+  }, [])
 
-  function handleSubmit(e) {
+  const handleSubmit = useCallback((e) => {
     e.preventDefault()
     let bestMatch = null
     let bestScore = -1
@@ -127,7 +127,7 @@ function TravelForm() {
     if (bestMatch) {
       generateActivities(bestMatch)
     }
-  }
+  }, [budget, duration, tripType, activities, climate, generateActivities])
 
   return (
     <>
@@ -226,7 +226,7 @@ function TravelForm() {
 
       {generatedActivities.length > 0 && (
         <div className="activities">
-          <h3>Activités suggérées par l'IA :</h3>
+          <h3>Activités suggérées par l&apos;IA :</h3>
           <div className="activities-grid">
             {generatedActivities.map((activity, index) => (
               <div key={index} className="activity-card">
