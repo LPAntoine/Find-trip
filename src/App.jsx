@@ -4,7 +4,10 @@ import TravelForm from './components/TravelForm'
 function App() {
   return (
     <>
-      <h1>Find-trip</h1>
+      <header className="logo">
+        <span className="logo-icon">🗺️</span>
+        Find-trip
+      </header>
       <TravelForm />
     </>
   )

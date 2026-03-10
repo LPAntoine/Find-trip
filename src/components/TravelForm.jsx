@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import IconText from './IconText'
 import destinations from '../destinations.json'
 import './TravelForm.css'
+import ReactMarkdown from 'react-markdown'
 
 function TravelForm() {
   const [budget, setBudget] = useState(null)
@@ -10,6 +11,7 @@ function TravelForm() {
   const [activities, setActivities] = useState([])
   const [climate, setClimate] = useState(null)
   const [selectedDestination, setSelectedDestination] = useState(null)
+  const [generatedActivities, setGeneratedActivities] = useState([])
 
   // log any selection changes for debugging
   useEffect(() => {
@@ -64,6 +66,39 @@ function TravelForm() {
     )
   }
 
+  async function generateActivities(destination) {
+    const prompt = `Propose 5 activités intéressantes à faire à ${destination.nom}, ${destination.pays}. Considère le type de voyage ${destination.type}, le climat ${destination.climat}, et les activités suggérées ${destination.activites.join(', ')}. Réponds en français avec une liste numérotée.`
+
+    try {
+      const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${import.meta.env.VITE_GROQ_API_KEY}`
+        },
+        body: JSON.stringify({
+          model: 'openai/gpt-oss-120b',
+          messages: [{ role: 'user', content: prompt }],
+          max_tokens: 500
+        })
+      })
+
+      const data = await response.json()
+      if (data.choices && data.choices[0]) {
+        const activitiesText = data.choices[0].message.content
+        const activitiesList = activitiesText.split('\n').filter(line => /^\d+\./.test(line.trim())).map(line => line.replace(/^\d+\.\s*/, '').trim())
+        setGeneratedActivities(activitiesList)
+      } else if (data.error) {
+        setGeneratedActivities([`Erreur API: ${data.error.message}`])
+      } else {
+        setGeneratedActivities(['Erreur: Réponse inattendue de l\'API.'])
+      }
+    } catch (error) {
+      console.error('Erreur lors de l\'appel à l\'API Groq:', error)
+      setGeneratedActivities(['Erreur lors de la génération des activités. Vérifiez la clé API ou les modèles disponibles sur https://console.groq.com/docs/models'])
+    }
+  }
+
   function handleSubmit(e) {
     e.preventDefault()
     let bestMatch = null
@@ -89,6 +124,9 @@ function TravelForm() {
     })
 
     setSelectedDestination(bestMatch)
+    if (bestMatch) {
+      generateActivities(bestMatch)
+    }
   }
 
   return (
@@ -182,6 +220,22 @@ function TravelForm() {
             <p><strong>Type:</strong> {selectedDestination.type}</p>
             <p><strong>Climat:</strong> {selectedDestination.climat}</p>
             <p><strong>Activités:</strong> {selectedDestination.activites.join(', ')}</p>
+          </div>
+        </div>
+      )}
+
+      {generatedActivities.length > 0 && (
+        <div className="activities">
+          <h3>Activités suggérées par l'IA :</h3>
+          <div className="activities-grid">
+            {generatedActivities.map((activity, index) => (
+              <div key={index} className="activity-card">
+                <div className="activity-number">{index + 1}</div>
+                <div className="activity-content">
+                  <ReactMarkdown>{activity}</ReactMarkdown>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       )}
