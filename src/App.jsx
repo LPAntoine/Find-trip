@@ -1,9 +1,11 @@
 import { useState } from 'react'
 import reactLogo from './assets/react.svg'
 import './App.css'
+import IconText from './components/IconText'
 
 function App() {
   const [count, setCount] = useState(0)
+  const [selected, setSelected] = useState(false)
 
   return (
     <>
@@ -16,6 +18,12 @@ function App() {
         </a>
       </div>
       <h1>Find-trip</h1>
+      <IconText
+        icon="🧭"
+        text="Découvrir ma prochaine destination"
+        selected={selected}
+        onClick={() => setSelected((prev) => !prev)}
+      />
       <div className="card">
         <button onClick={() => setCount((count) => count + 1)}>
           count is {count}
